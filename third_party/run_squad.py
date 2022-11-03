@@ -58,7 +58,8 @@ from transformers.data.metrics.squad_metrics import (
   squad_evaluate,
 )
 
-from xlm_roberta import XLMRobertaForQuestionAnswering, XLMRobertaConfig
+# from xlm_roberta import XLMRobertaForQuestionAnswering, XLMRobertaConfig
+from transformers import XLMRobertaForQuestionAnswering, XLMRobertaConfig
 
 from processors.squad import (
   SquadResult,
@@ -74,11 +75,6 @@ except ImportError:
 
 
 logger = logging.getLogger(__name__)
-
-ALL_MODELS = sum(
-  (tuple(conf.pretrained_config_archive_map.keys()) for conf in (BertConfig, XLNetConfig, XLMConfig)),
-  (),
-)
 
 MODEL_CLASSES = {
   "bert": (BertConfig, BertForQuestionAnswering, BertTokenizer),
@@ -505,8 +501,7 @@ def main():
     "--model_name_or_path",
     default=None,
     type=str,
-    required=True,
-    help="Path to pre-trained model or shortcut name selected in the list: " + ", ".join(ALL_MODELS),
+    required=True
   )
   parser.add_argument(
     "--output_dir",
