@@ -1,5 +1,31 @@
 # XTREME: A Massively Multilingual Multi-task Benchmark for Evaluating Cross-lingual Generalization
 
+
+# What's new
+- adapt to transformers==4.10.0
+  - qa(xquad, mlqa)
+
+
+# Run
+```bash
+# xquad
+bash scripts/train.sh xlm-roberta-large xquad
+
+# mlqa
+# also train on squad, u can just eval without training
+bash scripts/train.sh xlm-roberta-large mlqa
+
+# tydiqa
+bash scripts/train.sh xlm-roberta-large tydiqa
+```
+
+<br/>
+<br/>
+<br/>
+<br/>
+
+# Raw
+
 [**Tasks**](#tasks-and-languages) | [**Download**](#download-the-data) |
 [**Baselines**](#build-a-baseline-system) |
 [**Leaderboard**](#leaderboard-submission) |

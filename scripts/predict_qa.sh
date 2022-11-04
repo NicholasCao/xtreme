@@ -69,7 +69,8 @@ for lang in ${langs[@]}; do
     --do_eval \
     --eval_lang ${lang} \
     --predict_file "${TEST_FILE}" \
-    --output_dir "${PRED_DIR}" &> /dev/null
+    --data_dir ${DIR} \
+    --output_dir "${PRED_DIR}" > logs/${TGT}_${lang}.log  #&> /dev/null
 done
 
 # Rename files to test pattern

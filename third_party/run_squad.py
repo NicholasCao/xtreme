@@ -333,6 +333,9 @@ def evaluate(args, model, tokenizer, prefix="", language='en', lang2id=None):
 
       outputs = model(**inputs)
 
+      # adapt to transformers==4.10
+      outputs = [outputs.start_logits, outputs.end_logits]
+
     for i, example_index in enumerate(example_indices):
       eval_feature = features[example_index.item()]
       unique_id = int(eval_feature.unique_id)
@@ -734,6 +737,7 @@ def main():
     args.config_name if args.config_name else args.model_name_or_path,
     cache_dir=args.cache_dir if args.cache_dir else None,
   )
+  
   # Set using of language embedding to True
   if args.model_type == "xlm":
     config.use_lang_emb = True
@@ -814,6 +818,9 @@ def main():
     else:
       logger.info("Loading checkpoint %s for evaluation", args.model_name_or_path)
       checkpoints = [args.model_name_or_path]
+    
+    # # use trained checkpoint
+    # checkpoints = [args.output_dir]
 
     logger.info("Evaluate the following checkpoints: %s", checkpoints)
 
@@ -830,6 +837,7 @@ def main():
       results.update(result)
 
   logger.info("Results: {}".format(results))
+  print("Results: {}".format(results))
 
   return results
 

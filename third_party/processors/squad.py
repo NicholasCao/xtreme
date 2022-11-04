@@ -11,6 +11,7 @@ from transformers.models.bert.tokenization_bert import whitespace_tokenize
 from transformers.file_utils import is_tf_available, is_torch_available
 # from transformers.tokenization_bert import whitespace_tokenize
 from transformers import DataProcessor
+from transformers.tokenization_utils_base import BatchEncoding, PreTrainedTokenizerBase, TruncationStrategy
 
 if is_torch_available():
     import torch
@@ -103,6 +104,7 @@ def squad_convert_example_to_features(example, max_seq_length, doc_stride, max_q
     tok_to_orig_index = []
     orig_to_tok_index = []
     all_doc_tokens = []
+
     for (i, token) in enumerate(example.doc_tokens):
         orig_to_tok_index.append(len(all_doc_tokens))
         if lang2id is None:
@@ -127,26 +129,51 @@ def squad_convert_example_to_features(example, max_seq_length, doc_stride, max_q
 
     spans = []
 
-    truncated_query = tokenizer.encode(example.question_text, add_special_tokens=False, max_length=max_query_length)
+    truncated_query = tokenizer.encode(example.question_text, add_special_tokens=False, truncation=True, max_length=max_query_length)
+
     sequence_added_tokens = (
-        tokenizer.max_len - tokenizer.max_len_single_sentence + 1
+        tokenizer.model_max_length - tokenizer.max_len_single_sentence + 1
         if "roberta" in str(type(tokenizer))
-        else tokenizer.max_len - tokenizer.max_len_single_sentence
+        else tokenizer.model_max_length - tokenizer.max_len_single_sentence
     )
-    sequence_pair_added_tokens = tokenizer.max_len - tokenizer.max_len_sentences_pair
+    sequence_pair_added_tokens = tokenizer.model_max_length - tokenizer.max_len_sentences_pair
 
     span_doc_tokens = all_doc_tokens
     while len(spans) * doc_stride < len(all_doc_tokens):
 
-        encoded_dict = tokenizer.encode_plus(
-            truncated_query if tokenizer.padding_side == "right" else span_doc_tokens,
-            span_doc_tokens if tokenizer.padding_side == "right" else truncated_query,
+        # encoded_dict = tokenizer.encode_plus(
+        #     truncated_query if tokenizer.padding_side == "right" else span_doc_tokens,
+        #     span_doc_tokens if tokenizer.padding_side == "right" else truncated_query,
+        #     max_length=max_seq_length,
+        #     return_overflowing_tokens=True,
+        #     # pad_to_max_length=True,
+        #     truncation=truncation,
+        #     padding="max_length",
+        #     # padding=True
+        #     stride=max_seq_length - doc_stride - len(truncated_query) - sequence_pair_added_tokens,
+        #     truncation_strategy="only_second" if tokenizer.padding_side == "right" else "only_first",
+        #     return_token_type_ids=True
+        # )
+
+        # Define the side we want to truncate / pad and the text/pair sorting
+        if tokenizer.padding_side == "right":
+            texts = truncated_query
+            pairs = span_doc_tokens
+            truncation = TruncationStrategy.ONLY_SECOND.value
+        else:
+            texts = span_doc_tokens
+            pairs = truncated_query
+            truncation = TruncationStrategy.ONLY_FIRST.value
+
+        encoded_dict = tokenizer.encode_plus(  # TODO(thom) update this logic
+            texts,
+            pairs,
+            truncation=truncation,
+            padding="max_length",
             max_length=max_seq_length,
             return_overflowing_tokens=True,
-            pad_to_max_length=True,
             stride=max_seq_length - doc_stride - len(truncated_query) - sequence_pair_added_tokens,
-            truncation_strategy="only_second" if tokenizer.padding_side == "right" else "only_first",
-            return_token_type_ids=True
+            return_token_type_ids=True,
         )
 
         paragraph_len = min(
@@ -155,7 +182,14 @@ def squad_convert_example_to_features(example, max_seq_length, doc_stride, max_q
         )
 
         if tokenizer.pad_token_id in encoded_dict["input_ids"]:
-            non_padded_ids = encoded_dict["input_ids"][: encoded_dict["input_ids"].index(tokenizer.pad_token_id)]
+            if tokenizer.padding_side == "right":
+                non_padded_ids = encoded_dict["input_ids"][: encoded_dict["input_ids"].index(tokenizer.pad_token_id)]
+            else:
+                last_padding_id_position = (
+                    len(encoded_dict["input_ids"]) - 1 - encoded_dict["input_ids"][::-1].index(tokenizer.pad_token_id)
+                )
+                non_padded_ids = encoded_dict["input_ids"][last_padding_id_position + 1 :]
+
         else:
             non_padded_ids = encoded_dict["input_ids"]
 
@@ -176,7 +210,9 @@ def squad_convert_example_to_features(example, max_seq_length, doc_stride, max_q
 
         spans.append(encoded_dict)
 
-        if "overflowing_tokens" not in encoded_dict:
+        if "overflowing_tokens" not in encoded_dict or (
+            "overflowing_tokens" in encoded_dict and len(encoded_dict["overflowing_tokens"]) == 0
+        ):
             break
         span_doc_tokens = encoded_dict["overflowing_tokens"]
 

@@ -138,3 +138,5 @@ dmypy.json
 .pyre/
 
 runs/
+outputs-temp
+caches/
