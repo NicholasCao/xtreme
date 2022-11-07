@@ -47,33 +47,33 @@ if [ $SRC == 'squad' ]; then
   PREDICT_FILE=${TASK_DATA_DIR}/dev-v1.1.json
 else
   TASK_DATA_DIR=${DATA_DIR}/tydiqa
-  TRAIN_FILE=${TASK_DATA_DIR}/tydiqa-goldp-v1.1-train/tydiqa.en.train.json
+  TRAIN_FILE=${TASK_DATA_DIR}/tydiqa-goldp-v1.1-train/tydiqa.goldp.en.train.json
   PREDICT_FILE=${TASK_DATA_DIR}/tydiqa-goldp-v1.1-dev/tydiqa.goldp.en.dev.json
 fi
 
 # train
-CUDA_VISIBLE_DEVICES=$GPU python third_party/run_squad.py \
-  --model_type ${MODEL_TYPE} \
-  --model_name_or_path ${MODEL} \
-  --do_train \
-  --do_eval \
-  --data_dir ${TASK_DATA_DIR} \
-  --train_file ${TRAIN_FILE} \
-  --predict_file ${PREDICT_FILE} \
-  --per_gpu_train_batch_size ${BATCH_SIZE} \
-  --learning_rate ${LR} \
-  --num_train_epochs ${NUM_EPOCHS} \
-  --max_seq_length $MAXL \
-  --doc_stride 128 \
-  --save_steps -1 \
-  --overwrite_output_dir \
-  --gradient_accumulation_steps ${GRAD_ACC} \
-  --warmup_steps 500 \
-  --output_dir ${MODEL_PATH} \
-  --weight_decay 0.0001 \
-  --threads 8 \
-  --train_lang en \
-  --eval_lang en
+# CUDA_VISIBLE_DEVICES=$GPU python third_party/run_squad.py \
+#   --model_type ${MODEL_TYPE} \
+#   --model_name_or_path ${MODEL} \
+#   --do_train \
+#   --do_eval \
+#   --data_dir ${TASK_DATA_DIR} \
+#   --train_file ${TRAIN_FILE} \
+#   --predict_file ${PREDICT_FILE} \
+#   --per_gpu_train_batch_size ${BATCH_SIZE} \
+#   --learning_rate ${LR} \
+#   --num_train_epochs ${NUM_EPOCHS} \
+#   --max_seq_length $MAXL \
+#   --doc_stride 128 \
+#   --save_steps -1 \
+#   --overwrite_output_dir \
+#   --gradient_accumulation_steps ${GRAD_ACC} \
+#   --warmup_steps 500 \
+#   --output_dir ${MODEL_PATH} \
+#   --weight_decay 0.0001 \
+#   --threads 8 \
+#   --train_lang en \
+#   --eval_lang en
 
 # predict
 bash scripts/predict_qa.sh $MODEL $MODEL_PATH $TGT $GPU $DATA_DIR

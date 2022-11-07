@@ -404,13 +404,15 @@ def tatoeba_preprocess(args):
 
 
 def xquad_preprocess(args):
+  pass
   # Remove the test annotations to prevent accidental cheating
-  remove_qa_test_annotations(args.data_dir)
+  # remove_qa_test_annotations(args.data_dir)
 
 
 def mlqa_preprocess(args):
+  pass
   # Remove the test annotations to prevent accidental cheating
-  remove_qa_test_annotations(args.data_dir)
+  # remove_qa_test_annotations(args.data_dir)
 
 
 def tydiqa_preprocess(args):
@@ -459,7 +461,7 @@ def tydiqa_preprocess(args):
     os.rename(src_file, dst_file)
 
   # Remove the test annotations to prevent accidental cheating
-  remove_qa_test_annotations(dev_dir)
+  # remove_qa_test_annotations(dev_dir)
 
 
 def remove_qa_test_annotations(test_dir):

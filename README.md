@@ -3,7 +3,8 @@
 
 # What's new
 - adapt to transformers==4.10.0
-  - qa(xquad, mlqa)
+  - qa(xquad, mlqa, tydiqa)
+  
 
 
 # Run

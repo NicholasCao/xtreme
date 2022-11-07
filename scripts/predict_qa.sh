@@ -70,10 +70,10 @@ for lang in ${langs[@]}; do
     --eval_lang ${lang} \
     --predict_file "${TEST_FILE}" \
     --data_dir ${DIR} \
-    --output_dir "${PRED_DIR}" > logs/${TGT}_${lang}.log  #&> /dev/null
+    --output_dir "${PRED_DIR}" > logs/${TGT}/${TGT}_${lang}.log  #&> /dev/null
 done
 
 # Rename files to test pattern
-for lang in ${langs[@]}; do
-  mv $PRED_DIR/predictions_${lang}_.json $PRED_DIR/test-$lang.json
-done
+# for lang in ${langs[@]}; do
+#   mv $PRED_DIR/predictions_${lang}_.json $PRED_DIR/test-$lang.json
+# done
