@@ -27,8 +27,8 @@ BATCH_SIZE=4
 GRAD_ACC=8
 
 MAXL=384
-LR=3e-5
-NUM_EPOCHS=3.0
+LR=2e-5
+NUM_EPOCHS=2.0
 if [ $MODEL == "bert-base-multilingual-cased" ]; then
   MODEL_TYPE="bert"
 elif [ $MODEL == "xlm-mlm-100-1280" ] || [ $MODEL == "xlm-mlm-tlm-xnli15-1024" ]; then

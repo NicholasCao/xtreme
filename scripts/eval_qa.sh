@@ -24,22 +24,21 @@ EVAL_SQUAD=${PWD}/third_party/evaluate_squad.py
 EVAL_MLQA=${PWD}/third_party/evaluate_mlqa.py
 
 # PREDICTIONS_DIR=${REPO}/predictions
-PREDICTIONS_DIR=${REPO}/outputs-temp/squad/xlm-roberta-large_LR3e-5_EPOCH3.0_maxlen384_batchsize4_gradacc8/predictions
+PREDICTIONS_DIR=${REPO}/outputs-temp/squad/xlm-roberta-large_LR2e-5_EPOCH2.0_maxlen384_batchsize4_gradacc8/predictions
 
 XQUAD_PRED_DIR=${PREDICTIONS_DIR}/xquad
 MLQA_PRED_DIR=${PREDICTIONS_DIR}/mlqa
 
-
-PREDICTIONS_DIR=${REPO}/outputs-temp/tydiqa/xlm-roberta-large_LR3e-5_EPOCH3.0_maxlen384_batchsize4_gradacc8/predictions
+PREDICTIONS_DIR=${REPO}/outputs-temp/tydiqa/xlm-roberta-large_LR2e-5_EPOCH5.0_maxlen384_batchsize4_gradacc8/predictions
 TYDIQA_PRED_DIR=${PREDICTIONS_DIR}/tydiqa
 
-for pred_path in ${PREDICTIONS_DIR} ${XQUAD_PRED_DIR} ${MLQA_PRED_DIR} ${TYDIQA_PRED_DIR}; do
-  if [ ! -d ${pred_path} ]
-then
-  echo "Predictions path ${pred_path} does not exist."
-  exit
-fi
-done
+# for pred_path in ${PREDICTIONS_DIR} ${XQUAD_PRED_DIR} ${MLQA_PRED_DIR} ${TYDIQA_PRED_DIR}; do
+#   if [ ! -d ${pred_path} ]
+# then
+#   echo "Predictions path ${pred_path} does not exist."
+#   exit
+# fi
+# done
 
 echo
 echo "XQuAD"

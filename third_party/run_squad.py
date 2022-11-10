@@ -52,7 +52,7 @@ from transformers import (
   XLMRobertaTokenizer
 )
 
-from transformers.data.metrics.squad_metrics import (
+from squad_metrics import (
   compute_predictions_log_probs,
   compute_predictions_logits,
   squad_evaluate,
@@ -68,10 +68,10 @@ from processors.squad import (
   squad_convert_examples_to_features
 )
 
-try:
-  from torch.utils.tensorboard import SummaryWriter
-except ImportError:
-  from tensorboardX import SummaryWriter
+# try:
+#   from torch.utils.tensorboard import SummaryWriter
+# except ImportError:
+from tensorboardX import SummaryWriter
 
 
 logger = logging.getLogger(__name__)
@@ -397,6 +397,7 @@ def evaluate(args, model, tokenizer, prefix="", language='en', lang2id=None):
       args.version_2_with_negative,
       tokenizer,
       args.verbose_logging,
+      is_zh=(language == 'zh')
     )
   else:
     predictions = compute_predictions_logits(
@@ -413,6 +414,7 @@ def evaluate(args, model, tokenizer, prefix="", language='en', lang2id=None):
       args.version_2_with_negative,
       args.null_score_diff_threshold,
       tokenizer,
+      is_zh=(language == 'zh')
     )
 
   # Compute the F1 and exact scores.
